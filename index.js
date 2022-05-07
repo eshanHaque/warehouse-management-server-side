@@ -5,18 +5,27 @@ require('dotenv').config();
 const port = process.env.PORT || 5000;
 
 const app = express();
-// dbuser1
-// AcOo0dwoOZpBVsia
 
-
-
-const uri = "mongodb+srv://dbuser1:AcOo0dwoOZpBVsia@cluster0.ntjiy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ntjiy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-client.connect(err => {
-  const collection = client.db("test").collection("devices");
-  // perform actions on the collection object
-  client.close();
-});
+
+async function run () {
+    try{
+        await client.connect();
+        const usersCollection = client.db("test").collection("users");
+        const user = {
+            user : 'volu',
+            email: 'volu@gmail.com'
+        };
+        const result = await usersCollection.insertOne(user);
+        console.log(`user inserted with id:  ${result.insertedId}`)
+    }
+    finally{
+        // await client.close();
+    }
+}
+
+run().catch(console.dir);
 
 //middleware
 app.use(cors());
