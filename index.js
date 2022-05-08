@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
 
@@ -9,18 +9,26 @@ const app = express();
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ntjiy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
-async function run () {
-    try{
+async function run() {
+    try {
         await client.connect();
-        const usersCollection = client.db("test").collection("users");
-        const user = {
-            user : 'volu',
-            email: 'volu@gmail.com'
-        };
-        const result = await usersCollection.insertOne(user);
-        console.log(`user inserted with id:  ${result.insertedId}`)
+        const inventoryCollection = client.db('Warehouse').collection('Inventory');
+
+        app.get('/Inventory', async (req, res) => {
+            const query = {};
+            const cursor = inventoryCollection.find(query);
+            const inventories = await cursor.toArray();
+            res.send(inventories);
+        });
+
+        app.get('/Inventory/:id', async(req, res) =>{
+            const id = req.params.id;
+            const query={_id: ObjectId(id)};
+            const inventory = await inventoryCollection.findOne(query);
+            res.send(inventory);
+        });
     }
-    finally{
+    finally {
         // await client.close();
     }
 }
@@ -35,6 +43,6 @@ app.get('/', (req, res) => {
     res.send('running server');
 });
 
-app.listen(port, () =>{
+app.listen(port, () => {
     console.log('listen port', port);
 })
