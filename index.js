@@ -8,6 +8,7 @@ app.use(cors());
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ntjiy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 async function run() {
@@ -23,8 +24,10 @@ async function run() {
         });
 
         app.get('/Inventory/:id', async(req, res) =>{
-            const id = req.params.id;
+            // const id = req.params.id;
+            const id = mongoose.Types.ObjectId(req.params.id.trim());
             const query={_id: ObjectId(id)};
+            console.log(req.params.id);
             const inventory = await inventoryCollection.findOne(query);
             res.send(inventory);
         });
