@@ -24,14 +24,19 @@ async function run() {
         });
 
         app.get('/Inventory/:id', async(req, res) =>{
-            // const id = req.params.id;
-            const id = mongoose.Types.ObjectId(req.params.id.trim());
+            const id = req.params.id;
             const query={_id: ObjectId(id)};
-            console.log(req.params.id);
             const inventory = await inventoryCollection.findOne(query);
             res.send(inventory);
         });
+        app.get('/manage/:id', async(req, res) =>{
+            const id = req.params.id;
+            const query={_id: ObjectId(id)};
+            const quantity =  qty - 1
+            res.send(quantity);
+        });
     }
+    
     finally {
         // await client.close();
     }
